@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 
-app = Flask('Furniture store')
+app = Flask('Reviews')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -32,7 +32,7 @@ class Product(db.Model):
     in_stock = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
-        return f'Product{self.id}. {self.prod_name} - {self.price} rub.'
+        return f'Product{self.id}. {self.prod_name} - {self.price}.'
 
 
 @app.route('/')
@@ -53,10 +53,19 @@ def modify_product(product_id):
     #         product.update({'in_stock': in_stock})
     # return 'OK'
 
+@app.route('/delete_all', methods=['POST'])
+def delete_all():
+    db.drop_all()   # Удаляем все 
+    db.create_all() # Создаём заново
+    db.session.commit()
+    return 'База данных сброшена!'
 
 @app.route('/add', methods=['POST'])
 def add_product():
     data = request.json
+    price = data.get('price', 0)
+    if not (1 <= int(price) <= 5): # Проверяем,что рейтинг от 1 до 5
+        return 
     product = Product(**data)
     db.session.add(product)
     db.session.commit()

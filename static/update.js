@@ -20,3 +20,12 @@ function addProduct() {
     })
 //    console.log("Add")
 }
+
+function delete_all() { // Удаляем БД
+    fetch('/delete_all', {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }
+    }).then(() => {
+        location.reload(); 
+    });
+}
